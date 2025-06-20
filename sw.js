@@ -1,5 +1,4 @@
-// Service Worker for Web Push Notifications Demo
-const CACHE_NAME = 'firefox-notifications-demo-v1';
+const CACHE_NAME = 'notifications-demo-v1';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -7,7 +6,6 @@ const urlsToCache = [
     '/app.js'
 ];
 
-// Install event - cache resources
 self.addEventListener('install', (event) => {
     console.log('Service Worker: Install event');
     
@@ -23,7 +21,6 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
     console.log('Service Worker: Activate event');
     
@@ -41,16 +38,13 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch event - serve cached content when offline
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
-                // Return cached version or fetch from network
                 return response || fetch(event.request);
             })
             .catch(() => {
-                // If both cache and network fail, return a fallback
                 if (event.request.destination === 'document') {
                     return caches.match('/index.html');
                 }
@@ -58,7 +52,6 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
-// Push event - handle incoming push messages
 self.addEventListener('push', (event) => {
     console.log('Service Worker: Push event received', event);
     
@@ -87,7 +80,6 @@ self.addEventListener('push', (event) => {
         }
     };
 
-    // If push event has data, parse it
     if (event.data) {
         try {
             const pushData = event.data.json();
@@ -109,7 +101,6 @@ self.addEventListener('push', (event) => {
     );
 });
 
-// Notification click event
 self.addEventListener('notificationclick', (event) => {
     console.log('Service Worker: Notification clicked', event);
     
@@ -123,7 +114,6 @@ self.addEventListener('notificationclick', (event) => {
         return;
     }
 
-    // Default action or 'open' action
     const urlToOpen = notificationData.url || '/';
     
     event.waitUntil(
@@ -144,7 +134,6 @@ self.addEventListener('notificationclick', (event) => {
                 }
             })
             .then((client) => {
-                // Send message to the client about the notification click
                 if (client) {
                     client.postMessage({
                         type: 'NOTIFICATION_CLICKED',
@@ -162,12 +151,8 @@ self.addEventListener('notificationclick', (event) => {
     );
 });
 
-// Notification close event
 self.addEventListener('notificationclose', (event) => {
     console.log('Service Worker: Notification closed', event);
-    
-    // You can track notification close events here
-    // For example, send analytics data
 });
 
 // Message event - handle messages from the main thread
@@ -211,9 +196,7 @@ self.addEventListener('message', (event) => {
     }
 });
 
-// Utility functions for generating icons (using data URIs)
 function generateNotificationIcon() {
-    // Generate a simple notification icon using SVG data URI
     const svg = `
         <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="64" height="64" rx="12" fill="#4299e1"/>
@@ -224,7 +207,6 @@ function generateNotificationIcon() {
 }
 
 function generateBadgeIcon() {
-    // Generate a simple badge icon
     const svg = `
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="16" cy="16" r="16" fill="#4299e1"/>

@@ -10,7 +10,6 @@ class NotificationManager {
     async init() {
         this.log('Initializing notification manager...', 'info');
         
-        // Check for notification support
         this.isSupported = 'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
         
         if (!this.isSupported) {
@@ -21,7 +20,6 @@ class NotificationManager {
 
         this.log('Browser supports notifications', 'success');
         
-        // Register service worker
         try {
             this.registration = await navigator.serviceWorker.register('sw.js');
             this.log('Service worker registered successfully', 'success');
@@ -31,11 +29,9 @@ class NotificationManager {
             return;
         }
 
-        // Check current permission
         this.permission = Notification.permission;
         this.updateUI();
         
-        // Set up event listeners
         this.setupEventListeners();
         
         this.log('Notification manager initialized', 'success');
@@ -192,7 +188,6 @@ class NotificationManager {
         logContainer.appendChild(logEntry);
         logContainer.scrollTop = logContainer.scrollHeight;
         
-        // Keep only the last 50 log entries
         const entries = logContainer.querySelectorAll('.log-entry');
         if (entries.length > 50) {
             entries[0].remove();
@@ -200,12 +195,10 @@ class NotificationManager {
     }
 }
 
-// Initialize the notification manager when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     new NotificationManager();
 });
 
-// Handle service worker messages
 navigator.serviceWorker.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'NOTIFICATION_CLICKED') {
         console.log('Notification was clicked:', event.data.payload);
