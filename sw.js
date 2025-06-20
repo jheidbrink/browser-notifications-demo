@@ -76,7 +76,7 @@ self.addEventListener('push', (event) => {
         ],
         data: {
             timestamp: Date.now(),
-            url: '/'
+            url: self.location.pathname
         }
     };
 
@@ -114,14 +114,15 @@ self.addEventListener('notificationclick', (event) => {
         return;
     }
 
-    const urlToOpen = notificationData.url || '/';
+    const urlToOpen = notificationData.url || self.location.pathname;
     
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true })
             .then((clientList) => {
                 // Check if there's already a window/tab open with the target URL
+                const targetUrl = new URL(urlToOpen, self.location.origin).href;
                 for (const client of clientList) {
-                    if (client.url === new URL(urlToOpen, self.location.origin).href && 'focus' in client) {
+                    if (client.url === targetUrl && 'focus' in client) {
                         console.log('Service Worker: Focusing existing window');
                         return client.focus();
                     }
@@ -130,7 +131,8 @@ self.addEventListener('notificationclick', (event) => {
                 // If no existing window, open a new one
                 if (clients.openWindow) {
                     console.log('Service Worker: Opening new window');
-                    return clients.openWindow(urlToOpen);
+                    const targetUrl = new URL(urlToOpen, self.location.origin).href;
+                    return clients.openWindow(targetUrl);
                 }
             })
             .then((client) => {
@@ -178,7 +180,7 @@ self.addEventListener('message', (event) => {
             ],
             data: {
                 timestamp: payload.timestamp || Date.now(),
-                url: '/',
+                url: self.location.pathname,
                 source: 'manual'
             }
         };
