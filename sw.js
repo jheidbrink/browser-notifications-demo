@@ -76,7 +76,7 @@ self.addEventListener('push', (event) => {
         ],
         data: {
             timestamp: Date.now(),
-            url: self.location.pathname
+            url: './'
         }
     };
 
@@ -114,7 +114,7 @@ self.addEventListener('notificationclick', (event) => {
         return;
     }
 
-    const urlToOpen = notificationData.url || self.location.pathname;
+    const urlToOpen = notificationData.url || './';
     
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true })
@@ -180,7 +180,7 @@ self.addEventListener('message', (event) => {
             ],
             data: {
                 timestamp: payload.timestamp || Date.now(),
-                url: self.location.pathname,
+                url: './',
                 source: 'manual'
             }
         };
